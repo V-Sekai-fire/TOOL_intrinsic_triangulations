@@ -27,9 +27,9 @@ bool withGUI = true;
 polyscope::SurfaceMesh* psMesh;
 
 // Parameters
-float refineToSize = -1;
-float refineDegreeThresh = 25;
-bool useRefineSizeThresh = false;
+float refineDegreeThresh = 50;
+float refineToSize = 20;
+bool useRefineSizeThresh = true;
 bool useInsertionsMax;
 int insertionsMax = -2;
 
@@ -225,6 +225,26 @@ void outputVertexPositions() {
   saveMatrix("vertexPositions.dmat", vertexPositions);
 }
 
+void outputVertexPositionsObj() {
+  signpostTri->requireVertexIndices();
+  signpostTri->requireFaceNormals()
+  size_t nV = signpostTri->mesh.nVertices();
+  DenseMatrix<double> vertexPositions(nV, 3);
+
+  VertexData<Vector3> intrinsicPositions = signpostTri->sampleAtInput(geometry->inputVertexPositions);
+
+  size_t iV = 0;
+  for (Vertex v : signpostTri->mesh.vertices()) {
+    Vector3 p = intrinsicPositions[v];
+    vertexPositions(iV, 0) = p.x;
+    vertexPositions(iV, 1) = p.y;
+    vertexPositions(iV, 2) = p.z;
+    iV++;
+  }
+  VertexPositionGeometry outputGeo(signpostTri->mesh, vertexPositions);
+  writeSurfaceMesh(signpostTri->mesh, outputGeo, "vertexPositions.obj");
+}
+
 void outputLaplaceMat() {
   signpostTri->requireCotanLaplacian();
   saveMatrix("laplace.spmat", signpostTri->cotanLaplacian);
@@ -310,6 +330,7 @@ void myCallback() {
 
     if (ImGui::Button("intrinsic faces")) outputIntrinsicFaces();
     if (ImGui::Button("vertex positions")) outputVertexPositions();
+    if (ImGui::Button("export vertex positions")) outputVertexPositionsObj();
     if (ImGui::Button("Laplace matrix")) outputLaplaceMat();
     if (ImGui::Button("interpolate matrix")) outputInterpolatMat();
 
@@ -330,8 +351,8 @@ int main(int argc, char** argv) {
   args::Group triangulation(parser, "triangulation");
   args::Flag flipDelaunay(triangulation, "flipDelaunay", "Flip edges to make the mesh intrinsic Delaunay", {"flipDelaunay"});
   args::Flag refineDelaunay(triangulation, "refineDelaunay", "Refine and flip edges to make the mesh intrinsic Delaunay and satisfy angle/size bounds", {"refineDelaunay"});
-  args::ValueFlag<double> refineAngle(triangulation, "refineAngle", "Minimum angle threshold (in degrees). Default: 25.", {"refineAngle"}, 25.);
-  args::ValueFlag<double> refineSizeCircum(triangulation, "refineSizeCircum", "Maximum triangle size, set by specifying the circumradius. Default: inf", {"refineSizeCircum"}, std::numeric_limits<double>::infinity());
+  args::ValueFlag<double> refineAngle(triangulation, "refineAngle", "Minimum angle threshold (in degrees). Default: 25.", {"refineAngle"}, 15.);
+  args::ValueFlag<double> refineSizeCircum(triangulation, "refineSizeCircum", "Maximum triangle size, set by specifying the circumradius. Default: inf", {"refineSizeCircum"}, 25);
   args::ValueFlag<int> refineMaxInsertions(triangulation, "refineMaxInsertions", 
       "Maximum number of insertions during refinement. Use 0 for no max, or negative values to scale by number of vertices. Default: 10 * nVerts", 
       {"refineMaxInsertions"}, -10);
@@ -341,6 +362,7 @@ int main(int argc, char** argv) {
   args::ValueFlag<std::string> outputPrefixArg(output, "outputPrefix", "Prefix to prepend to all output file paths. Default: intrinsic_", {"outputPrefix"}, "intrinsic_");
   args::Flag intrinsicFaces(output, "edgeLengths", "write the face information for the intrinsic triangulation. name: 'faceInds.dmat, faceLengths.dmat'", {"intrinsicFaces"});
   args::Flag vertexPositions(output, "vertexPositions", "write the vertex positions for the intrinsic triangulation. name: 'vertexPositions.dmat'", {"vertexPositions"});
+  args::Flag exportObj(output, "obj", "write the vertex positions for the intrinsic triangulation. name: 'vertexPositions.obj'", {"vertexPositions"});  
   args::Flag laplaceMat(output, "laplaceMat", "write the Laplace-Beltrami matrix for the triangulation. name: 'laplace.spmat'", {"laplaceMat"});
   args::Flag interpolateMat(output, "interpolateMat", "write the matrix which expresses data on the intrinsic vertices as a linear combination of the input vertices. name: 'interpolate.mat'", {"interpolateMat"});
   // clang-format on
@@ -429,6 +451,7 @@ int main(int argc, char** argv) {
   if (vertexPositions) outputVertexPositions();
   if (laplaceMat) outputLaplaceMat();
   if (interpolateMat) outputInterpolatMat();
+  if (exportObj) outputVertexPositionsObj();
 
   // Give control to the polyscope gui
   if (withGUI) {
