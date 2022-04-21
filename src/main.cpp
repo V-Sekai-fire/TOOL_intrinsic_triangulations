@@ -8,7 +8,7 @@
 #include "polyscope/polyscope.h"
 #include "polyscope/surface_mesh.h"
 
-#include "args/args.hxx"
+#include "../deps/polyscope/deps/args/args/args.hxx"
 #include "imgui.h"
 
 #include <sstream>
@@ -227,7 +227,7 @@ void outputVertexPositions() {
 
 void outputVertexPositionsObj() {
   signpostTri->requireVertexIndices();
-  signpostTri->requireFaceNormals()
+  signpostTri->requireFaceAreas();
   size_t nV = signpostTri->mesh.nVertices();
   DenseMatrix<double> vertexPositions(nV, 3);
 
