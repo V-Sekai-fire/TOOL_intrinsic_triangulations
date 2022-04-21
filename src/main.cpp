@@ -51,7 +51,7 @@ void updateTriagulationViz() {
 
 
   // Get the edge traces
-  EdgeData<std::vector<SurfacePoint>> traces = signpostTri->traceEdges();
+  EdgeData<std::vector<SurfacePoint>> traces = signpostTri->traceAllIntrinsicEdgesAlongInput();
 
   // Convert to 3D positions
   std::vector<std::vector<Vector3>> traces3D(traces.size());
@@ -189,7 +189,7 @@ void outputIntrinsicFaces() {
       size_t indA = signpostTri->vertexIndices[vA];
       size_t indB = signpostTri->vertexIndices[vB];
       Edge e = he.edge();
-      double l = signpostTri->intrinsicEdgeLengths[e];
+      double l = signpostTri->inputEdgeLengths[e];
 
       faceLengths(iF, v) = l;
       faceInds(iF, v) = indA;
@@ -211,7 +211,7 @@ void outputVertexPositions() {
   size_t nV = signpostTri->mesh.nVertices();
   DenseMatrix<double> vertexPositions(nV, 3);
 
-  VertexData<Vector3> intrinsicPositions = signpostTri->sampleAtInput(geometry->inputVertexPositions);
+  VertexData<Vector3> intrinsicPositions = signpostTri->sampleFromInput(geometry->inputVertexPositions);
 
   size_t iV = 0;
   for (Vertex v : signpostTri->mesh.vertices()) {
@@ -231,7 +231,7 @@ void outputVertexPositionsObj() {
   size_t nV = signpostTri->mesh.nVertices();
   DenseMatrix<double> vertexPositions(nV, 3);
 
-  VertexData<Vector3> intrinsicPositions = signpostTri->sampleAtInput(geometry->inputVertexPositions);
+  VertexData<Vector3> intrinsicPositions = signpostTri->sampleFromInput(geometry->inputVertexPositions);
 
   size_t iV = 0;
   for (Vertex v : signpostTri->mesh.vertices()) {
