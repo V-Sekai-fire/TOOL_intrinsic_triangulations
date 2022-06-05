@@ -19,6 +19,7 @@ using namespace geometrycentral::surface;
 // == Geometry-central data
 std::unique_ptr<ManifoldSurfaceMesh> mesh;
 std::unique_ptr<VertexPositionGeometry> geometry;
+std::unique_ptr<CornerData<Vector2>> uvs;
 
 std::unique_ptr<SignpostIntrinsicTriangulation> signpostTri;
 
@@ -242,7 +243,7 @@ void outputVertexPositionsObj() {
     iV++;
   }
   VertexPositionGeometry outputGeo(signpostTri->mesh, vertexPositions);
-  writeSurfaceMesh(signpostTri->mesh, outputGeo, "vertexPositions.obj");
+  writeSurfaceMesh(signpostTri->mesh, outputGeo, *uvs, "vertexPositions.obj");
 }
 
 void outputLaplaceMat() {
@@ -397,7 +398,7 @@ int main(int argc, char** argv) {
   outputPrefix = args::get(outputPrefixArg);
 
   // Load mesh
-  std::tie(mesh, geometry) = readManifoldSurfaceMesh(args::get(inputFilename));
+  std::tie(mesh, geometry, uvs) = readParameterizedManifoldSurfaceMesh(args::get(inputFilename));
 
   // Sale max insertions by number of vertices if needed
   if (insertionsMax < 0) {
