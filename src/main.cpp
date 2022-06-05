@@ -436,7 +436,7 @@ int main(int argc, char** argv) {
     polyscope::getSurfaceMesh()->setFaceTangentBasisX(fBasisX);
 
     // Nice defaults
-    psMesh->setEdgeWidth(1.0);
+    psMesh->setEdgeWidth(0.5);
   }
 
 
