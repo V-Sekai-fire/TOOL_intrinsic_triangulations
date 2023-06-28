@@ -22,9 +22,9 @@ jobs:
           tar xf llvm-mingw-20230614-ucrt-ubuntu-20.04-x86_64.tar.xz
           echo "$(pwd)/llvm-mingw-20230614-ucrt-ubuntu-20.04-x86_64/bin" >> $GITHUB_PATH
 
-      - name: Install Ninja (Ubuntu)
+      - name: Install Dependencies (Ubuntu)
         if: runner.os == 'Linux'
-        run: sudo apt-get install ninja-build
+        run: sudo apt-get install ninja-build libxrandr-dev
 
       - name: Install Ninja (Windows)
         if: runner.os == 'Windows'
