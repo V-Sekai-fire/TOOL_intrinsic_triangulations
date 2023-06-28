@@ -20,6 +20,18 @@ jobs:
           tar xf llvm-mingw-20230614-ucrt-ubuntu-20.04-x86_64.tar.xz
           echo "$(pwd)/llvm-mingw-20230614-ucrt-ubuntu-20.04-x86_64/bin" >> $GITHUB_PATH
 
+      - name: Install Ninja (Ubuntu)
+        if: runner.os == 'Linux'
+        run: sudo apt-get install ninja-build
+
+      - name: Install Ninja (Windows)
+        if: runner.os == 'Windows'
+        run: choco install ninja
+
+      - name: Install Ninja (macOS)
+        if: runner.os == 'macOS'
+        run: brew install ninja
+
       - name: Create Build Directory
         run: mkdir build
 
@@ -38,3 +50,25 @@ jobs:
         with:
           name: build-bin-${{ runner.os }}
           path: build/bin/
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          asset_path: ./build/bin/
+          asset_name: build-bin-${{ runner.os }}
+          asset_content_type: application/octet-stream
