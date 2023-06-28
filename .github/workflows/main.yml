@@ -24,7 +24,7 @@ jobs:
 
       - name: Install Dependencies (Ubuntu)
         if: runner.os == 'Linux'
-        run: sudo apt-get install ninja-build libxrandr-dev
+        run: sudo apt-get install ninja-build xorg-dev libglu1-mesa-dev libxrandr-dev libxi-dev libxinerama-dev libxcursor-dev libxxf86vm-dev
 
       - name: Install Ninja (Windows)
         if: runner.os == 'Windows'
