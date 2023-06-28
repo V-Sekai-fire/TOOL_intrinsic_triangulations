@@ -1,6 +1,6 @@
 name: Build with CMake and Ninja
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   build:
@@ -63,6 +63,7 @@ jobs:
           release_name: Release-${{ github.repository }}-${{ github.run_id }}
           draft: false
           prerelease: false
+        if: github.event_name == 'push' # Only run this step for push events
 
       - name: Upload Release Asset
         id: upload-release-asset
@@ -74,3 +75,4 @@ jobs:
           asset_path: ./build/bin/
           asset_name: build-bin-${{ runner.os }}
           asset_content_type: application/octet-stream
+        if: github.event_name == 'push' # Only run this step for push events
