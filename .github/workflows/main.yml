@@ -50,7 +50,11 @@ jobs:
       - name: Create Zip File
         run: |
           cd build
-          zip -r bin.zip bin/
+          if [[ "${{ runner.os }}" == "Windows" ]]; then
+            powershell Compress-Archive -Path bin/* -DestinationPath bin.zip
+          else
+            zip -r bin.zip bin/
+          fi
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
