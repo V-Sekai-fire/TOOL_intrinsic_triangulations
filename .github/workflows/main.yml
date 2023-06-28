@@ -47,14 +47,17 @@ jobs:
           cd build
           ninja
 
-      - name: Create Zip File
+      - name: Create Zip File (Windows)
         run: |
           cd build
-          if [[ "${{ runner.os }}" == "Windows" ]]; then
-            powershell Compress-Archive -Path bin/* -DestinationPath bin.zip
-          else
-            zip -r bin.zip bin/
-          fi
+          powershell Compress-Archive -Path bin/* -DestinationPath bin.zip
+        if: runner.os == 'Windows'
+
+      - name: Create Zip File (Linux and macOS)
+        run: |
+          cd build
+          zip -r bin.zip bin/
+        if: runner.os != 'Windows'
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
