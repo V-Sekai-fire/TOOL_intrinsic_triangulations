@@ -363,7 +363,7 @@ int main(int argc, char** argv) {
   args::ValueFlag<std::string> outputPrefixArg(output, "outputPrefix", "Prefix to prepend to all output file paths. Default: intrinsic_", {"outputPrefix"}, "intrinsic_");
   args::Flag intrinsicFaces(output, "edgeLengths", "write the face information for the intrinsic triangulation. name: 'faceInds.dmat, faceLengths.dmat'", {"intrinsicFaces"});
   args::Flag vertexPositions(output, "vertexPositions", "write the vertex positions for the intrinsic triangulation. name: 'vertexPositions.dmat'", {"vertexPositions"});
-  args::Flag exportObj(output, "obj", "write the vertex positions for the intrinsic triangulation. name: 'vertexPositions.obj'", {"vertexPositions"});  
+  args::Flag exportObj(output, "obj", "write the vertex positions for the intrinsic triangulation. name: 'vertexPositions.obj'", {"exportObj"});  
   args::Flag laplaceMat(output, "laplaceMat", "write the Laplace-Beltrami matrix for the triangulation. name: 'laplace.spmat'", {"laplaceMat"});
   args::Flag interpolateMat(output, "interpolateMat", "write the matrix which expresses data on the intrinsic vertices as a linear combination of the input vertices. name: 'interpolate.mat'", {"interpolateMat"});
   // clang-format on
